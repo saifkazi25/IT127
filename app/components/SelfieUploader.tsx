@@ -1,68 +1,55 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
-const SelfieUploader = () => {
-  const [file, setFile] = useState<File | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const searchParams = useSearchParams()
-  const router = useRouter()
+export default function SelfieUploader() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [image, setImage] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0])
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
     }
-  }
+  };
 
-  const handleGenerate = async () => {
-    if (!file) {
-      alert('Please upload a selfie first.')
-      return
-    }
+  const handleSubmit = async () => {
+    if (!image) return;
 
-    const formData = new FormData()
-    formData.append('image', file)
-
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("image", image);
     for (const [key, value] of searchParams.entries()) {
-      formData.append(key, value)
+      formData.append(key, value);
     }
 
-    try {
-      setIsLoading(true)
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      body: formData,
+    });
 
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (data?.imageUrl) {
-        router.push(`/result?url=${encodeURIComponent(data.imageUrl)}`)
-      } else {
-        alert('Something went wrong. No image returned.')
-      }
-    } catch (error) {
-      console.error('Error generating image:', error)
-      alert('Failed to generate image.')
-    } finally {
-      setIsLoading(false)
+    const data = await res.json();
+    if (data.url) {
+      router.push(`/result?url=${data.url}`);
+    } else {
+      alert("Image generation failed.");
     }
-  }
+
+    setLoading(false);
+  };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="space-y-4">
       <input type="file" accept="image/*" onChange={handleFileChange} />
       <button
-        className="bg-black text-white py-2 px-4 rounded"
-        onClick={handleGenerate}
-        disabled={isLoading}
+        onClick={handleSubmit}
+        disabled={loading}
+        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
       >
-        {isLoading ? 'Generating...' : 'Generate'}
+        {loading ? "Generating..." : "Generate Fantasy Image"}
       </button>
     </div>
-  )
+  );
 }
-
-export default SelfieUploader
