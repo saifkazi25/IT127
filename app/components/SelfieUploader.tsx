@@ -1,69 +1,68 @@
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function SelfieUploader() {
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const searchParams = useSearchParams();
-  const router = useRouter();
+const SelfieUploader = () => {
+  const [file, setFile] = useState<File | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFile(e.target.files[0]);
+      setFile(e.target.files[0])
     }
-  };
+  }
 
-  const handleUpload = async () => {
-    if (!file) return;
+  const handleGenerate = async () => {
+    if (!file) {
+      alert('Please upload a selfie first.')
+      return
+    }
 
-    const formData = new FormData();
-    formData.append('image', file);
+    const formData = new FormData()
+    formData.append('image', file)
 
     for (const [key, value] of searchParams.entries()) {
-      formData.append(key, value);
+      formData.append(key, value)
     }
 
-    setUploading(true);
-
     try {
+      setIsLoading(true)
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         body: formData,
-      });
+      })
 
-      const result = await response.json();
-      if (result?.url) {
-        router.push(`/result?url=${encodeURIComponent(result.url)}`);
+      const data = await response.json()
+
+      if (data?.imageUrl) {
+        router.push(`/result?url=${encodeURIComponent(data.imageUrl)}`)
       } else {
-        alert('Failed to generate image.');
+        alert('Something went wrong. No image returned.')
       }
-    } catch (err) {
-      console.error('Error:', err);
-      alert('Something went wrong.');
+    } catch (error) {
+      console.error('Error generating image:', error)
+      alert('Failed to generate image.')
     } finally {
-      setUploading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="text-center space-y-4">
-      <h2 className="text-xl font-semibold">Upload a selfie</h2>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="block mx-auto"
-      />
+    <div className="flex flex-col items-center gap-4">
+      <input type="file" accept="image/*" onChange={handleFileChange} />
       <button
-        onClick={handleUpload}
-        disabled={!file || uploading}
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        className="bg-black text-white py-2 px-4 rounded"
+        onClick={handleGenerate}
+        disabled={isLoading}
       >
-        {uploading ? 'Generating...' : 'Generate Fantasy'}
+        {isLoading ? 'Generating...' : 'Generate'}
       </button>
     </div>
-  );
+  )
 }
 
+export default SelfieUploader
