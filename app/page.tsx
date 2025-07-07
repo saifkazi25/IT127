@@ -1,11 +1,16 @@
+// app/page.tsx
 'use client';
-import React, { Suspense } from 'react';
-import SelfieUploader from '../../components/SelfieUploader';
+import React from 'react';
+import QuizForm from '../components/QuizForm';
 
-export default function SelfiePage() {
+export default function Home() {
   return (
-    <Suspense fallback={<div>Loading selfie uploader...</div>}>
-      <SelfieUploader />
-    </Suspense>
+    <main className="flex min-h-screen items-center justify-center bg-white text-black p-4">
+      <div className="max-w-xl w-full">
+        <h1 className="text-4xl font-bold mb-6 text-center">🌌 Infinite Tsukuyomi</h1>
+        <QuizForm />
+      </div>
+    </main>
   );
 }
+
