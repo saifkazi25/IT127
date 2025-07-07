@@ -1,4 +1,3 @@
-// app/selfie/page.tsx
 "use client";
 
 import React, { useEffect } from "react";
