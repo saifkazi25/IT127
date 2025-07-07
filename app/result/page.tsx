@@ -1,17 +1,11 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react';
+import ResultDisplay from '../../components/ResultDisplay';
 
 export default function ResultPage() {
-  const params = useSearchParams();
-  const url = params.get('url') || '';
   return (
-    <main className="...">
-      <h1>Your AI Selfie Fusion</h1>
-      {url ? (
-        <img src={url} alt="Generated selfie" />
-      ) : (
-        <p>No image found 🫥</p>
-      )}
-    </main>
+    <Suspense fallback={<div>Loading result...</div>}>
+      <ResultDisplay />
+    </Suspense>
   );
 }
