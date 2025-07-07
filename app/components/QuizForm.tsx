@@ -4,18 +4,18 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const questions = [
-  "What world would you want to wake up in?",
-  "Who are you in that world?",
-  "What do you look like?",
+  "What's the weather like in your fantasy?",
+  "What kind of hero are you?",
+  "What's your moral alignment?",
   "What are you wearing?",
-  "What powers or skills do you have?",
-  "What emotion are you feeling?",
-  "Who is with you?",
+  "What's your mode of transport?",
+  "What's your emotional vibe?",
+  "Pick a fantasy element",
 ];
 
 export default function QuizForm() {
   const router = useRouter();
-  const [answers, setAnswers] = useState<string[]>(Array(questions.length).fill(""));
+  const [answers, setAnswers] = useState(Array(questions.length).fill(""));
 
   const handleChange = (index: number, value: string) => {
     const newAnswers = [...answers];
@@ -25,26 +25,32 @@ export default function QuizForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const query = answers.map((a, i) => `q${i + 1}=${encodeURIComponent(a)}`).join("&");
-    router.push(`/selfie?${query}`);
+    const searchParams = new URLSearchParams();
+    answers.forEach((answer, idx) => {
+      searchParams.append(`q${idx + 1}`, answer);
+    });
+    router.push(`/selfie?${searchParams.toString()}`);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-4">
-      {questions.map((q, i) => (
-        <div key={i} className="mb-4">
-          <label className="block font-semibold mb-1">{q}</label>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {questions.map((question, idx) => (
+        <div key={idx}>
+          <label className="block font-medium">{question}</label>
           <input
-            required
             type="text"
-            value={answers[i]}
-            onChange={(e) => handleChange(i, e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            required
+            value={answers[idx]}
+            onChange={(e) => handleChange(idx, e.target.value)}
+            className="w-full border p-2 rounded"
           />
         </div>
       ))}
-      <button type="submit" className="bg-black text-white px-4 py-2 rounded">
-        Next: Upload Selfie
+      <button
+        type="submit"
+        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+      >
+        Next
       </button>
     </form>
   );
