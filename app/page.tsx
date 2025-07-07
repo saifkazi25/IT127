@@ -1,15 +1,11 @@
 'use client';
+import SelfieUploader from '../components/SelfieUploader';
 
-import React, { Suspense } from 'react';
-import QuizForm from './components/QuizForm';
-
-export default function HomePage() {
+export default function SelfiePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-white text-black">
-      <Suspense fallback={<div>Loading...</div>}>
-        <QuizForm />
-      </Suspense>
+    <main className="...">
+      <h1>Upload your selfie</h1>
+      <SelfieUploader />
     </main>
   );
 }
-
