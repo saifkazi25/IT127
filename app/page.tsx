@@ -1,5 +1,5 @@
 'use client';
-import SelfieUploader from '../components/SelfieUploader';
+import SelfieUploader from "../../components/SelfieUploader";
 
 export default function SelfiePage() {
   return (
